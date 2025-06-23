@@ -8,7 +8,7 @@ function Profile() {
   useEffect(() => {
     const syncUser = async () => {
       if (user) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('users')
           .upsert([{ id: user.id, email: user.primaryEmailAddress?.emailAddress }])
 
@@ -23,3 +23,4 @@ function Profile() {
 }
 
 export default Profile
+
