@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Flame, CalendarDays } from "lucide-react"
+import { Flame } from "lucide-react"
 
 function Streak() {
   return (
