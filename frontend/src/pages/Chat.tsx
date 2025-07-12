@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { sendMessageToOpenAI } from "@/lib/openai";
 import { Loader2 } from "lucide-react";
 
 function Chat() {
@@ -15,8 +14,23 @@ function Chat() {
     setInput("");
     setLoading(true);
 
-    const aiResponse = await sendMessageToOpenAI(userMessage);
-    setMessages((prev) => [...prev, `🤖: ${aiResponse}`]);
+    try {
+    const response = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // If you're using Clerk for authentication:
+        // Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({ message: userMessage }),
+    });
+
+    const data = await response.json();
+    setMessages((prev) => [...prev, `🤖: ${data.reply}`]);
+  } catch (err) {
+    setMessages((prev) => [...prev, `🤖: Error talking to backend 😢`]);
+  }
+
     setLoading(false);
   };
 

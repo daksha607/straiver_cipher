@@ -20,7 +20,9 @@ import ProblemsSolved from "@/pages/ProblemsSolved"
 import DaysActive from "@/pages/DaysActive"
 
 function App() {
+
   return (
+
     <Routes>
       {/* 🔹 Landing Page */}
       <Route path="/" element={<Landing />} />

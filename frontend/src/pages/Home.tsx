@@ -21,9 +21,8 @@ const topics = ["DSA", "Aptitude", "Core Subjects", "System Design"] as const
 
 const contentMap: Record<(typeof topics)[number], { title: string; description: string }[]> = {
   DSA: [
-    { title: "Arrays", description: "Master patterns and edge cases" },
-    { title: "Graphs", description: "Understand traversal, cycles" },
-    { title: "DP", description: "Break problems into subproblems" },
+    { title: "Data Structures", description: "Master patterns and edge cases" },
+    { title: "Algorihtms", description: "Understand traversal, cycles" },
   ],
   Aptitude: [
     { title: "Percentages", description: "Quick tricks & speed math" },
@@ -55,9 +54,6 @@ function Home() {
           <h1 className="text-3xl font-bold">
             👋 Welcome back, {user?.firstName ?? "User"}!
           </h1>
-          <Button variant="outline" size="icon">
-            <Sun className="h-5 w-5" />
-          </Button>
         </div>
 
         {/* Stat Cards */}
@@ -155,15 +151,15 @@ function Home() {
                 </motion.div>
               ))}
             </AnimatePresence>
+          </div>
+        </div>
+      </div>
             {/* Footer */}
             <footer className="mt-12 border-t pt-6 text-sm text-center text-muted-foreground">
             <p>
             Built with 💻 using React, Tailwind, and AI © {new Date().getFullYear()} str-ai-ver. All rights reserved.
             </p>
             </footer>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
