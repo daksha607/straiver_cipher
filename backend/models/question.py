@@ -1,16 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List
 from datetime import datetime
-from db.session import Base
 
-class Question(Base):
-    __tablename__ = "questions"
+class Question(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    description: str
+    user_id: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    user_id = Column(String, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    answers: List["Answer"] = Relationship(back_populates="question")
 
-    answers = relationship("Answer", back_populates="question")
+from models.answer import Answer  # If you're adding this in question.py
+
 

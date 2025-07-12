@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@clerk/clerk-react";
+import { BASE_URL } from "@/lib/api"; // Make sure this points to your backend
 
 function Chat() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const { getToken } = useAuth();
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -15,21 +18,26 @@ function Chat() {
     setLoading(true);
 
     try {
-    const response = await fetch("http://localhost:8000/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // If you're using Clerk for authentication:
-        // Authorization: `Bearer ${userToken}`,
-      },
-      body: JSON.stringify({ message: userMessage }),
-    });
+      const token = await getToken();
+      const response = await fetch(`${BASE_URL}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Clerk token
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
 
-    const data = await response.json();
-    setMessages((prev) => [...prev, `🤖: ${data.reply}`]);
-  } catch (err) {
-    setMessages((prev) => [...prev, `🤖: Error talking to backend 😢`]);
-  }
+      if (!response.ok) throw new Error("Failed to fetch from backend");
+
+      const data = await response.json();
+      setMessages((prev) => [...prev, `🤖: ${data.reply}`]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        `🤖: Error talking to backend 😢`,
+      ]);
+    }
 
     setLoading(false);
   };
