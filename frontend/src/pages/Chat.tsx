@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
-import { BASE_URL } from "@/lib/api"; // Make sure this points to your backend
+import { BASE_URL } from "@/lib/api"; // Make sure this points to your backend     
 
 function Chat() {
   const [input, setInput] = useState("");
@@ -23,7 +23,7 @@ function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Clerk token
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: userMessage }),
       });
@@ -31,12 +31,9 @@ function Chat() {
       if (!response.ok) throw new Error("Failed to fetch from backend");
 
       const data = await response.json();
-      setMessages((prev) => [...prev, `🤖: ${data.reply}`]);
+      setMessages((prev) => [...prev, `🤖: ${data.response}`]); // ✅ fixed
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        `🤖: Error talking to backend 😢`,
-      ]);
+      setMessages((prev) => [...prev, `🤖: Error talking to backend 😢`]);
     }
 
     setLoading(false);
@@ -80,6 +77,7 @@ function Chat() {
 }
 
 export default Chat;
+
 
 
 
