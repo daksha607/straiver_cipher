@@ -1,4 +1,4 @@
-export const BASE_URL = "https://straivercipher-production.up.railway.app";
+export const BASE_URL = "http://localhost:8000";
 
 export const sendMessage = async (message: string, token: string) => {
   const res = await fetch(`${BASE_URL}/chat`, {

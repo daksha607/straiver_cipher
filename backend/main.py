@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
-from sqlmodel import SQLModel, Session, select
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import SQLModel, Session, select
 
 from models.question import Question
 from models.answer import Answer
@@ -8,41 +8,45 @@ from schemas.question import QuestionCreate
 from schemas.answer import AnswerCreate
 from auth.dependencies import verify_token
 from routes.chat import router as chat_router
+from routes.history import router as history_router
 
-from db.session import get_session, engine  # ✅ Import the DB session and engine
-
+from db.session import get_session, engine
 from dotenv import load_dotenv
 import os
 
-# Load environment variables
+# Load .env variables
 load_dotenv()
 
-# Initialize FastAPI app
+# Initialize FastAPI
 app = FastAPI()
 
-# CORS setup (adjust origin in production)
+# Enable CORS (Frontend at http://localhost:5173 or * for dev)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL like ["http://localhost:5173"]
+    allow_origins=["*"],  # Replace with ["http://localhost:5173"] in prod
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include chat routes
+# Include Routers
 app.include_router(chat_router)
+app.include_router(history_router)
 
-# Database table creation at startup
+# Auto-create tables on startup
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
 
-# Root test route
+# Health check endpoint
 @app.get("/")
 def read_root():
     return {"message": "Straiver API running with Clerk auth 🔐"}
 
-# ✅ Create a new question
+# ---------------------------
+# 🧠 Questions & Answers APIs
+# ---------------------------
+
 @app.post("/questions")
 def create_question(
     question: QuestionCreate,
@@ -55,12 +59,10 @@ def create_question(
     session.refresh(q)
     return q
 
-# ✅ Get all questions
 @app.get("/questions")
 def get_all_questions(session: Session = Depends(get_session)):
     return session.exec(select(Question)).all()
 
-# ✅ Post an answer
 @app.post("/questions/{question_id}/answers")
 def create_answer(
     question_id: int,
@@ -74,7 +76,6 @@ def create_answer(
     session.refresh(a)
     return a
 
-# ✅ Get a question with all its answers
 @app.get("/questions/{question_id}")
 def get_question_with_answers(question_id: int, session: Session = Depends(get_session)):
     question = session.get(Question, question_id)
@@ -82,5 +83,6 @@ def get_question_with_answers(question_id: int, session: Session = Depends(get_s
         raise HTTPException(status_code=404, detail="Question not found")
     answers = session.exec(select(Answer).where(Answer.question_id == question_id)).all()
     return {"question": question, "answers": answers}
+
 
 

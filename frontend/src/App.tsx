@@ -19,6 +19,8 @@ import Streak from "@/pages/Streak"
 import ProblemsSolved from "@/pages/ProblemsSolved"
 import DaysActive from "@/pages/DaysActive"
 
+import HistoryPage from "@/pages/history";
+
 function App() {
 
   return (
@@ -78,6 +80,17 @@ function App() {
             <Chat />
           </SignedIn>
         }
+      />
+
+      <Route
+        path="/history"
+        element={
+          <SignedIn>
+            <Navbar />
+            <SyncUserToSupabase />
+            <HistoryPage />
+          </SignedIn>
+       }
       />
 
       {/* Fallback */}

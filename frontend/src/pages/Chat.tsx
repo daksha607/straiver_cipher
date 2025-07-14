@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
-import { BASE_URL } from "@/lib/api"; // Make sure this points to your backend     
+import { BASE_URL } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button"; 
 
 function Chat() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { getToken } = useAuth();
+  const navigate = useNavigate(); // ⬅️ Hook to navigate
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -23,7 +26,7 @@ function Chat() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({ message: userMessage }),
       });
@@ -31,8 +34,9 @@ function Chat() {
       if (!response.ok) throw new Error("Failed to fetch from backend");
 
       const data = await response.json();
-      setMessages((prev) => [...prev, `🤖: ${data.response}`]); // ✅ fixed
+      setMessages((prev) => [...prev, `🤖: ${data.reply}`]);
     } catch (err) {
+      console.error("Chat error:", err);
       setMessages((prev) => [...prev, `🤖: Error talking to backend 😢`]);
     }
 
@@ -40,7 +44,7 @@ function Chat() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto text-white min-h-screen">
+    <div className="p-6 max-w-3xl mx-auto text-white min-h-screen space-y-4">
       <h2 className="text-3xl font-bold mb-4">Chat with str-ai-ver 🤖</h2>
 
       <div className="bg-gray-800 p-4 rounded-lg h-96 overflow-y-auto mb-4 space-y-2 text-sm sm:text-base">
@@ -72,11 +76,24 @@ function Chat() {
           Send
         </button>
       </div>
+
+      {/* 📜 View Chat History Button */}
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          onClick={() => navigate("/history")}
+          className="mt-4"
+        >
+          📜 View Chat History
+        </Button>
+      </div>
     </div>
   );
 }
 
 export default Chat;
+
+
 
 
 
